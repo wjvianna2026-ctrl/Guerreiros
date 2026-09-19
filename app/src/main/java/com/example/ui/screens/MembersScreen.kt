@@ -491,7 +491,7 @@ fun MemberCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f, fill = false)) {
                     Text(
                         text = "Pago: R$ ${"%.2f".format(Locale.US, totalPaid)}",
                         color = EmeraldPaid,
@@ -508,7 +508,12 @@ fun MemberCard(
                     )
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     OutlinedButton(
                         onClick = onViewStatement,
                         border = BorderStroke(1.dp, GoldAmber),
@@ -520,7 +525,6 @@ fun MemberCard(
                     }
 
                     if (canEdit) {
-                        Spacer(modifier = Modifier.width(4.dp))
                         OutlinedButton(
                             onClick = onEdit,
                             border = BorderStroke(1.dp, ElectricCyan),
@@ -535,7 +539,6 @@ fun MemberCard(
                     }
 
                     if (canDelete) {
-                        Spacer(modifier = Modifier.width(4.dp))
                         OutlinedButton(
                             onClick = onDelete,
                             border = BorderStroke(1.dp, ScarletOverdue),

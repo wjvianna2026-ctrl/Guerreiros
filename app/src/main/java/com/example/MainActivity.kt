@@ -16,9 +16,16 @@ import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,86 +100,154 @@ fun GuerreirosApp(viewModel: ClubViewModel) {
     var showPwaGuide by remember { mutableStateOf(false) }
     var showSettingsModal by remember { mutableStateOf(false) }
 
-    Scaffold(
-        containerColor = DarkBgDeep,
-        topBar = {
-            ClubTopBar(
-                currentRole = currentRole,
-                onRoleSelect = { viewModel.setRole(it) },
-                allMembers = allMembers,
-                selectedMemberId = selectedMemberId,
-                onMemberSelect = { viewModel.setSelectedMember(it) },
-                onOpenPromptModal = { showPromptModal = true },
-                onOpenPwaGuide = { showPwaGuide = true },
-                onOpenSettings = { showSettingsModal = true },
-                onLogout = { viewModel.logout() }
-            )
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = DarkBgSurface,
-                tonalElevation = 8.dp
-            ) {
-                NavigationTab.entries.forEach { tab ->
-                    val isSelected = currentTab == tab
-                    val icon = when (tab) {
-                        NavigationTab.DASHBOARD -> Icons.Default.Dashboard
-                        NavigationTab.MEMBERS -> Icons.Default.People
-                        NavigationTab.DUES -> Icons.Default.Payment
-                        NavigationTab.LOANS -> Icons.Default.Handshake
-                        NavigationTab.PURCHASES -> Icons.Default.ShoppingBag
-                        NavigationTab.REPORTS -> Icons.Default.AccountBalance
-                    }
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isWide = maxWidth >= 768.dp
 
-                    val labelText = when (tab) {
-                        NavigationTab.DASHBOARD -> "Caixa"
-                        NavigationTab.MEMBERS -> "Irmãos"
-                        NavigationTab.DUES -> "Mensal."
-                        NavigationTab.LOANS -> "Fundo"
-                        NavigationTab.PURCHASES -> "Compras"
-                        NavigationTab.REPORTS -> "Auditoria"
-                    }
+        Scaffold(
+            containerColor = DarkBgDeep,
+            topBar = {
+                ClubTopBar(
+                    currentRole = currentRole,
+                    onRoleSelect = { viewModel.setRole(it) },
+                    allMembers = allMembers,
+                    selectedMemberId = selectedMemberId,
+                    onMemberSelect = { viewModel.setSelectedMember(it) },
+                    onOpenPromptModal = { showPromptModal = true },
+                    onOpenPwaGuide = { showPwaGuide = true },
+                    onOpenSettings = { showSettingsModal = true },
+                    onLogout = { viewModel.logout() }
+                )
+            },
+            bottomBar = {
+                if (!isWide) {
+                    NavigationBar(
+                        containerColor = DarkBgSurface,
+                        tonalElevation = 8.dp
+                    ) {
+                        NavigationTab.entries.forEach { tab ->
+                            val isSelected = currentTab == tab
+                            val icon = when (tab) {
+                                NavigationTab.DASHBOARD -> Icons.Default.Dashboard
+                                NavigationTab.MEMBERS -> Icons.Default.People
+                                NavigationTab.DUES -> Icons.Default.Payment
+                                NavigationTab.LOANS -> Icons.Default.Handshake
+                                NavigationTab.PURCHASES -> Icons.Default.ShoppingBag
+                                NavigationTab.REPORTS -> Icons.Default.AccountBalance
+                            }
 
-                    NavigationBarItem(
-                        selected = isSelected,
-                        onClick = { viewModel.setTab(tab) },
-                        modifier = Modifier.testTag("nav_tab_${tab.name.lowercase()}"),
-                        icon = {
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = tab.title
+                            val labelText = when (tab) {
+                                NavigationTab.DASHBOARD -> "Caixa"
+                                NavigationTab.MEMBERS -> "Irmãos"
+                                NavigationTab.DUES -> "Mensal."
+                                NavigationTab.LOANS -> "Fundo"
+                                NavigationTab.PURCHASES -> "Compras"
+                                NavigationTab.REPORTS -> "Auditoria"
+                            }
+
+                            NavigationBarItem(
+                                selected = isSelected,
+                                onClick = { viewModel.setTab(tab) },
+                                modifier = Modifier.testTag("nav_tab_${tab.name.lowercase()}"),
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = tab.title
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = labelText,
+                                        fontSize = 10.sp
+                                    )
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = Color(0xFF1C1300),
+                                    selectedTextColor = GoldAmberLight,
+                                    indicatorColor = GoldAmber,
+                                    unselectedIconColor = TextSecondary,
+                                    unselectedTextColor = TextMuted
+                                )
                             )
-                        },
-                        label = {
-                            Text(
-                                text = labelText,
-                                fontSize = 10.sp
-                            )
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFF1C1300),
-                            selectedTextColor = GoldAmberLight,
-                            indicatorColor = GoldAmber,
-                            unselectedIconColor = TextSecondary,
-                            unselectedTextColor = TextMuted
-                        )
-                    )
+                        }
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            when (currentTab) {
-                NavigationTab.DASHBOARD -> DashboardScreen(viewModel = viewModel, onNavigateToTab = { viewModel.setTab(it) })
-                NavigationTab.MEMBERS -> MembersScreen(viewModel = viewModel)
-                NavigationTab.DUES -> DuesScreen(viewModel = viewModel)
-                NavigationTab.LOANS -> LoansScreen(viewModel = viewModel)
-                NavigationTab.PURCHASES -> PurchasesScreen(viewModel = viewModel)
-                NavigationTab.REPORTS -> ReportsScreen(viewModel = viewModel)
+        ) { innerPadding ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                // NavigationRail on Wide Screen (Tablets, Laptops, Desktops)
+                if (isWide) {
+                    NavigationRail(
+                        containerColor = DarkBgSurface,
+                        header = {
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    ) {
+                        NavigationTab.entries.forEach { tab ->
+                            val isSelected = currentTab == tab
+                            val icon = when (tab) {
+                                NavigationTab.DASHBOARD -> Icons.Default.Dashboard
+                                NavigationTab.MEMBERS -> Icons.Default.People
+                                NavigationTab.DUES -> Icons.Default.Payment
+                                NavigationTab.LOANS -> Icons.Default.Handshake
+                                NavigationTab.PURCHASES -> Icons.Default.ShoppingBag
+                                NavigationTab.REPORTS -> Icons.Default.AccountBalance
+                            }
+
+                            val labelText = when (tab) {
+                                NavigationTab.DASHBOARD -> "Caixa"
+                                NavigationTab.MEMBERS -> "Irmãos"
+                                NavigationTab.DUES -> "Mensal."
+                                NavigationTab.LOANS -> "Fundo"
+                                NavigationTab.PURCHASES -> "Compras"
+                                NavigationTab.REPORTS -> "Auditoria"
+                            }
+
+                            NavigationRailItem(
+                                selected = isSelected,
+                                onClick = { viewModel.setTab(tab) },
+                                modifier = Modifier.testTag("nav_rail_${tab.name.lowercase()}"),
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = tab.title
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = labelText,
+                                        fontSize = 11.sp
+                                    )
+                                },
+                                colors = NavigationRailItemDefaults.colors(
+                                    selectedIconColor = Color(0xFF1C1300),
+                                    selectedTextColor = GoldAmberLight,
+                                    indicatorColor = GoldAmber,
+                                    unselectedIconColor = TextSecondary,
+                                    unselectedTextColor = TextMuted
+                                )
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    when (currentTab) {
+                        NavigationTab.DASHBOARD -> DashboardScreen(viewModel = viewModel, onNavigateToTab = { viewModel.setTab(it) })
+                        NavigationTab.MEMBERS -> MembersScreen(viewModel = viewModel)
+                        NavigationTab.DUES -> DuesScreen(viewModel = viewModel)
+                        NavigationTab.LOANS -> LoansScreen(viewModel = viewModel)
+                        NavigationTab.PURCHASES -> PurchasesScreen(viewModel = viewModel)
+                        NavigationTab.REPORTS -> ReportsScreen(viewModel = viewModel)
+                    }
+                }
             }
         }
     }

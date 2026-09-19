@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -109,11 +111,20 @@ fun ReportsScreen(
     val totalExpenses = transactions.filter { it.type == "Saída" }.sumOf { it.amount }
     val calculatedNetBalance = if (transactions.isEmpty()) 0.0 else (totalIncome - totalExpenses)
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 80.dp)
-    ) {
-        // Header
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isWide = maxWidth > 720.dp
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .widthIn(max = 1100.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                // Header
         item {
             Column(modifier = Modifier.padding(14.dp)) {
                 Text(
@@ -286,6 +297,8 @@ fun ReportsScreen(
                 onDelete = { transactionToDelete = tx }
             )
         }
+    }
+    }
     }
 
     // Modal: Inserir Transação em Auditoria
