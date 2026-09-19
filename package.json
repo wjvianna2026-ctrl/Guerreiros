@@ -1,0 +1,14 @@
+{
+  "name": "guerreiros-do-bem-mc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Guerreiros do Bem Moto Clube - Portal Oficial",
+  "scripts": {
+    "dev": "echo 'Static'",
+    "build": "echo 'Deploy pronto'",
+    "preview": "echo 'Preview'"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
