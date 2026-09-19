@@ -1,0 +1,54 @@
+package com.example.data
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+@Database(
+    entities = [
+        MemberEntity::class,
+        MonthlyDueEntity::class,
+        LoanRequestEntity::class,
+        LoanInstallmentEntity::class,
+        CollectivePurchaseEntity::class,
+        PurchaseQuotaEntity::class,
+        CashTransactionEntity::class,
+        ClubSettingsEntity::class
+    ],
+    version = 1,
+    exportSchema = false
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun clubDao(): ClubDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        fun getInstance(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "guerreiros_do_bem_mc.db"
+                ).addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            INSTANCE?.let { database ->
+                                PrepopulateData.populateDatabase(database.clubDao())
+                            }
+                        }
+                    }
+                }).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}

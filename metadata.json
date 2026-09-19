@@ -1,0 +1,6 @@
+{
+  "name": "Guerreiros do Bem MC",
+  "description": "Gestão Financeira e Administrativa do Guerreiros do Bem Moto Clube com controle de caixa, mensalidades, empréstimos e compras.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
